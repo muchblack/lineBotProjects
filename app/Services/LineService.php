@@ -7,6 +7,8 @@ use LINE\Constants\HTTPHeader;
 use LINE\Parser\EventRequestParser;
 use LINE\Webhook\Model\MessageEvent;
 use LINE\Webhook\Model\TextMessageContent;
+use LINE\Webhook\Model\JoinEvent;
+use LINE\Webhook\Model\FollowEvent;
 
 use App\KeyWords\Error;
 
@@ -28,24 +30,31 @@ class LineService
         $parsedEvents = EventRequestParser::parseEventRequest($request->getContent(), config('line.channel_secret'), $signature);
         foreach($parsedEvents->getEvents() as $event)
         {
-            if(!($event instanceof  MessageEvent))
-            {
-                continue;
+            if ($event instanceof JoinEvent || $event instanceof FollowEvent) {
+                $this->handleUserJoin($event, $this->_bot);
             }
 
-            $message = $event->getMessage();
-            if(!($message instanceof TextMessageContent))
+            if($event instanceof MessageEvent)
             {
-                continue;
+                $message = $event->getMessage();
+                if(!($message instanceof TextMessageContent))
+                {
+                    continue;
+                }
+
+                $command = match ($message->getText()) {
+                    default => new CommandService($event, $this->_bot, new Error()),
+                };
+
+                $command->reply();
             }
-
-            $command = match ($message->getText()) {
-                default => new CommandService($event, $this->_bot, new Error()),
-            };
-
-            $command->reply();
         }
 
         return response('ok');
+    }
+
+    private function handleUserJoin($event, $bot)
+    {
+
     }
 }
