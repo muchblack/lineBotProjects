@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use LINE\Clients\MessagingApi\Api\MessagingApiApi;
 use LINE\Clients\MessagingApi\Configuration;
 use LINE\Constants\HTTPHeader;
@@ -10,7 +11,10 @@ use LINE\Webhook\Model\TextMessageContent;
 use LINE\Webhook\Model\JoinEvent;
 use LINE\Webhook\Model\FollowEvent;
 
+use App\Models\User;
+
 use App\KeyWords\Error;
+use App\KeyWords\WelCome;
 
 class LineService
 {
@@ -31,7 +35,9 @@ class LineService
         foreach($parsedEvents->getEvents() as $event)
         {
             if ($event instanceof JoinEvent || $event instanceof FollowEvent) {
-                $this->handleUserJoin($event, $this->_bot);
+                $userProfile = $this->handleUserJoin($event, $this->_bot);
+                $command = new CommandService($event, $this->_bot, new WelCome($userProfile));
+                $command->reply();
             }
 
             if($event instanceof MessageEvent)
@@ -53,8 +59,24 @@ class LineService
         return response('ok');
     }
 
-    private function handleUserJoin($event, $bot)
+    private function handleUserJoin($event, $bot): array
     {
+        $userId = $event->getSource()->getUserId();
 
+        $userResponse = json_decode($bot->getProfile($userId), true);
+
+        $objUser = new User();
+        $user  = $objUser->where('lineUserID', $userId)->first();
+        if(!$user)
+        {
+            $objUser->lineUserID = $userId;
+            $objUser->nickname = $userResponse['displayName'];
+            $objUser->save();
+        }
+
+
+        return [
+            'nickName' => $userResponse['displayName'],
+        ];
     }
 }
