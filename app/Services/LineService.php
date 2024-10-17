@@ -1,6 +1,13 @@
 <?php
 namespace App\Services;
 
+use App\KeyWords\AddNewReserve;
+use App\KeyWords\CheckReserve;
+use App\KeyWords\ExportReserve;
+use App\KeyWords\RemoveReserve;
+use App\KeyWords\ReserveDecrease;
+use App\KeyWords\ReserveIncrease;
+use App\KeyWords\StopAndCancel;
 use Illuminate\Support\Facades\Log;
 use LINE\Clients\MessagingApi\Api\MessagingApiApi;
 use LINE\Clients\MessagingApi\Configuration;
@@ -49,6 +56,13 @@ class LineService
                 }
 
                 $command = match ($message->getText()) {
+                    '新增庫存' => new CommandService($event, $this->_bot, new AddNewReserve()),
+                    '刪除庫存' => new CommandService($event, $this->_bot, new RemoveReserve()),
+                    '庫存數量增加' => new CommandService($event, $this->_bot, new ReserveIncrease()),
+                    '庫存數量減少' => new CommandService($event, $this->_bot, new ReserveDecrease()),
+                    '庫存確認' => new CommandService($event, $this->_bot, new CheckReserve()),
+                    '庫存匯出' => new CommandService($event, $this->_bot, new ExportReserve()),
+                    '中止' => new CommandService($event, $this->_bot, new StopAndCancel()),
                     default => new CommandService($event, $this->_bot, new Error()),
                 };
 
