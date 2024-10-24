@@ -21,7 +21,7 @@ class CommandService
 
     public function reply(): void
     {
-        $replyText = $this->service->replyCommand();
+        $replyText = $this->service->replyCommand($this->event);
         $this->bot->replyMessage( new ReplyMessageRequest([
             'replyToken' => $this->event->getReplyToken(),
             'messages' => $replyText

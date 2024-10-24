@@ -23,8 +23,11 @@ use App\Models\User;
 use App\KeyWords\Error;
 use App\KeyWords\WelCome;
 
+use App\Traits\UserStatus;
+
 class LineService
 {
+    use UserStatus;
     private MessagingApiApi $_bot;
 
     public function __construct()
@@ -39,8 +42,14 @@ class LineService
     {
         $signature = $request->header(HTTPHeader::LINE_SIGNATURE);
         $parsedEvents = EventRequestParser::parseEventRequest($request->getContent(), config('line.channel_secret'), $signature);
+
         foreach($parsedEvents->getEvents() as $event)
         {
+            //test
+//            Redis::set('userId', $event->getSource()->getUserId());
+//            Log::info(Redis::get('userId'));
+
+
             if ($event instanceof JoinEvent || $event instanceof FollowEvent) {
                 $userProfile = $this->handleUserJoin($event, $this->_bot);
                 $command = new CommandService($event, $this->_bot, new WelCome($userProfile));
@@ -55,16 +64,35 @@ class LineService
                     continue;
                 }
 
-                $command = match ($message->getText()) {
-                    '新增庫存' => new CommandService($event, $this->_bot, new AddNewReserve()),
-                    '刪除庫存' => new CommandService($event, $this->_bot, new RemoveReserve()),
-                    '庫存數量增加' => new CommandService($event, $this->_bot, new ReserveIncrease()),
-                    '庫存數量減少' => new CommandService($event, $this->_bot, new ReserveDecrease()),
-                    '庫存確認' => new CommandService($event, $this->_bot, new CheckReserve()),
-                    '庫存匯出' => new CommandService($event, $this->_bot, new ExportReserve()),
-                    '中止' => new CommandService($event, $this->_bot, new StopAndCancel()),
-                    default => new CommandService($event, $this->_bot, new Error()),
-                };
+                //檢查是否在交互輸入中
+                $checkCommand = $this->getUserStatus($event->getSource()->getUserId());
+                Log::info('command => '. json_encode($checkCommand));
+
+                if($checkCommand['statusLock'] === 'none')
+                {
+                    $command = match ($message->getText()) {
+                        '新增庫存' => new CommandService($event, $this->_bot, new AddNewReserve()),
+                        '刪除庫存' => new CommandService($event, $this->_bot, new RemoveReserve()),
+                        '庫存數量增加' => new CommandService($event, $this->_bot, new ReserveIncrease()),
+                        '庫存數量減少' => new CommandService($event, $this->_bot, new ReserveDecrease()),
+                        '庫存確認' => new CommandService($event, $this->_bot, new CheckReserve()),
+                        '庫存匯出' => new CommandService($event, $this->_bot, new ExportReserve()),
+                        '中止' => new CommandService($event, $this->_bot, new StopAndCancel()),
+                        default => new CommandService($event, $this->_bot, new Error()),
+                    };
+
+                }
+                else
+                {
+                    $command = match ($checkCommand['statusLock']) {
+                        'newStatus' => new CommandService($event, $this->_bot, new AddNewReserve()),
+                        'delStatus' => new CommandService($event, $this->_bot, new RemoveReserve()),
+                        'insStatus' => new CommandService($event, $this->_bot, new ReserveIncrease()),
+                        'desStatus' => new CommandService($event, $this->_bot, new ReserveDecrease()),
+                        'chkStatus' => new CommandService($event, $this->_bot, new CheckReserve()),
+                        default => new CommandService($event, $this->_bot, new Error()),
+                    };
+                }
 
                 $command->reply();
             }

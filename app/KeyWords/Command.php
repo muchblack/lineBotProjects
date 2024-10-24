@@ -4,5 +4,5 @@ namespace App\KeyWords;
 
 interface Command
 {
-    public function replyCommand();
+    public function replyCommand($event);
 }
