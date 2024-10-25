@@ -7,7 +7,7 @@ namespace App\KeyWords;
  */
 class RemoveReserve implements Command
 {
-    public function replyCommand()
+    public function replyCommand($event)
     {
         // TODO: Implement replyCommand() method.
     }

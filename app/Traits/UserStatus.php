@@ -25,8 +25,12 @@ trait UserStatus
 
                 Redis::set($userID, json_encode($userStatus, JSON_UNESCAPED_UNICODE));
             }
+            else
+            {
+                $userStatus = json_decode($userStatus, true);
+            }
 
-            return json_decode($userStatus,true);
+            return $userStatus;
     }
 
     public function setUserStatus($userID, $method, $action)
@@ -35,5 +39,30 @@ trait UserStatus
         $userStatus[$method] = $action;
 
         Redis::set($userID, json_encode($userStatus, JSON_UNESCAPED_UNICODE));
+    }
+
+    public function getUserInput($userID)
+    {
+        return json_decode(Redis::get('input_'.$userID), true);
+    }
+
+    public function setUserInput($userId, $input_column, $input_value)
+    {
+        $userInput = json_decode(Redis::get('input_'.$userId), true) ?? [] ;
+        Log::info('[setUserInput][inputColumn] '. $input_column);
+        Log::info('[setUserInput][inputValue] '. $input_value);
+        $userInput[$input_column] = $input_value;
+        Redis::set('input_'.$userId, json_encode($userInput, JSON_UNESCAPED_UNICODE));
+    }
+
+    public function clearUserInput($userId)
+    {
+        Redis::del('input_'.$userId);
+    }
+
+    public function cleanUserALL($userID)
+    {
+        Redis::del($userID);
+        Redis::del('input_'.$userID);
     }
 }
