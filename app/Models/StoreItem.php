@@ -13,6 +13,7 @@ class StoreItem extends Model
         'user_id',
         'item_name',
         'item_unit',
-        'item_quantity'
+        'item_quantity',
+        'dollarPerSet'
     ];
 }
