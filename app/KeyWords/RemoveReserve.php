@@ -42,7 +42,7 @@ class RemoveReserve implements Command
                 }
                 break;
             case "FINISH":
-                if( (!preg_match('/^-?[1-9][0-9]*$|^0$/', $input)) || $input <= 0) {
+                if( !preg_match('/^-?([1-9]\d*|0)(\.\d+)?$/', $input)) {
                     $text = "輸入錯誤，這不是數字";
                 }
                 else{

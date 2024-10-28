@@ -31,14 +31,14 @@ class ReserveDecrease implements Command
                         $text .= "庫存材料ID : ".$Item->id." , ".$Item->item_name." ".$Item->item_quantity."個\n";
                     }
                     $text .= "請輸入要減少數量的材料ID,僅限數字";
-                    $this->setUserStatus($userId, $this->method, 'WAIT:UNIT');
+                    $this->setUserStatus($userId, $this->method, 'WAIT:QUANTITY');
                 }
                 else
                 {
                     $text = "沒有類似名稱的材料。";
                 }
                 break;
-            case "WAIT:UNIT":
+            case "WAIT:QUANTITY":
                 if( (!preg_match('/^-?[1-9][0-9]*$|^0$/', $input)) || $input <= 0)
                 {
                     $text = "輸入錯誤，這不是數字";
@@ -59,7 +59,7 @@ class ReserveDecrease implements Command
                 }
                 break;
             case "FINISH":
-                if((!preg_match('/^-?[1-9][0-9]*$|^0$/', $input) || $input <= 0 ))
+                if((!preg_match('/^-?([1-9]\d*|0)(\.\d+)?$/', $input) || $input < 0 ))
                 {
                     $text = "輸入錯誤，這不是數字或是輸入爲負數";
                 }

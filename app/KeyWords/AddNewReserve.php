@@ -45,7 +45,7 @@ class AddNewReserve implements Command
                 $this->setUserInput($userId, 'item_unit', $input);
                 break;
             case "WAIT:PRICE":
-                if( (!preg_match('/^-?[1-9][0-9]*$|^0$/', $input)) || $input <= 0) {
+                if( (!preg_match('/^-?([1-9]\d*|0)(\.\d+)?$/', $input)) || $input < 0) {
                     $text = "輸入錯誤，這不是數字";
                 }
                 else
@@ -56,8 +56,8 @@ class AddNewReserve implements Command
                 }
                 break;
             case "FINISH":
-                Log::info('[gettype]=>'.gettype($input).", [Value]=>".$input.", [preg_match]=>".preg_match('/^-?[1-9][0-9]*$|^0$/', $input));
-                if( (!preg_match('/^-?[1-9][0-9]*$|^0$/', $input)) || $input <= 0) {
+                Log::info('[gettype]=>'.gettype($input).", [Value]=>".$input.", [preg_match]=>".preg_match('/^-?([1-9]\d*|0)(\.\d+)?$/', $input));
+                if( (!preg_match('/^-?([1-9]\d*|0)(\.\d+)?$/', $input)) || $input < 0) {
                     $text = "輸入錯誤，這不是數字";
                 }
                 else

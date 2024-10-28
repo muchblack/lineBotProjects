@@ -11,7 +11,7 @@ use Maatwebsite\Excel\Facades\Excel;
  */
 class ExportReserve implements Command
 {
-    public function replyCommand($event, $userId, $input, $objStoreItem)
+    public function replyCommand($event, $userId, $input, $objStoreItem): array
     {
         // TODO: Implement replyCommand() method.
         $fileName = $userId.'/export.xlsx';

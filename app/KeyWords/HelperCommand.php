@@ -18,7 +18,7 @@ class HelperCommand implements Command
      * @param $input
      * @param $objStoreItem
      */
-    public function replyCommand($event, $userId, $input, $objStoreItem)
+    public function replyCommand($event, $userId, $input, $objStoreItem): array
     {
         $text = "目前的指令有： \n";
         $text .= "/新增庫存 : 用來新增庫存材料項目 \n";
