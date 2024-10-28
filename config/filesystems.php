@@ -45,6 +45,14 @@ return [
             'throw' => false,
         ],
 
+        'export' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/exports'),
+            'url' => env('APP_URL').'/export',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -72,6 +80,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('export') => storage_path('app/public/exports')
     ],
 
 ];
