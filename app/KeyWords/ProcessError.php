@@ -9,7 +9,7 @@ use App\Traits\UserStatus;
 class ProcessError implements Command
 {
     use UserStatus;
-    public function replyCommand($event): array
+    public function replyCommand($event, $userId, $input, $objStoreItem): array
     {
         $userStatus = $this->getUserStatus($event->getSource()->getUserId());
         // TODO: Implement replyCommand() method.
@@ -19,6 +19,7 @@ class ProcessError implements Command
             'insStatus' => '庫存數量增加',
             'desStatus' => '庫存數量減少',
             'chkStatus' => '庫存確認',
+            'priceStatus' => '庫存金額修改'
         ];
         $text = "目前還在處理 [".$commandList[$userStatus['statusLock']]."] 中，請全部輸入完成後再進行其他動作,或是輸入[中止]來結束流程。";
 

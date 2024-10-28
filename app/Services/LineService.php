@@ -1,7 +1,6 @@
 <?php
 namespace App\Services;
 
-
 use Illuminate\Support\Facades\Log;
 use LINE\Clients\MessagingApi\Api\MessagingApiApi;
 use LINE\Clients\MessagingApi\Configuration;
@@ -14,6 +13,8 @@ use LINE\Webhook\Model\FollowEvent;
 
 use App\Models\User;
 
+use App\KeyWords\ModifyReservePrice;
+use App\KeyWords\HelperCommand;
 use App\KeyWords\CommandError;
 use App\KeyWords\WelCome;
 use App\KeyWords\AddNewReserve;
@@ -48,6 +49,7 @@ class LineService
         $commandList = [
             'newStatus' => '/新增庫存',
             'delStatus' => '/刪除庫存',
+            'priceStates' => '/庫存金額修改',
             'insStatus' => '/庫存數量增加',
             'desStatus' => '/庫存數量減少',
             'chkStatus' => '/庫存確認',
@@ -80,11 +82,13 @@ class LineService
                     $command = match ($message->getText()) {
                         '/新增庫存' => new CommandService($event, $this->_bot, new AddNewReserve()),
                         '/刪除庫存' => new CommandService($event, $this->_bot, new RemoveReserve()),
+                        '/庫存金額修改' => new CommandService($event, $this->_bot, new ModifyReservePrice()),
                         '/庫存數量增加' => new CommandService($event, $this->_bot, new ReserveIncrease()),
                         '/庫存數量減少' => new CommandService($event, $this->_bot, new ReserveDecrease()),
                         '/庫存確認' => new CommandService($event, $this->_bot, new CheckReserve()),
                         '/庫存匯出' => new CommandService($event, $this->_bot, new ExportReserve()),
                         '/中止' => new CommandService($event, $this->_bot, new StopAndCancel()),
+                        '/help' => new CommandService($event, $this->_bot, new HelperCommand()),
                         default => new CommandService($event, $this->_bot, new CommandError()),
                     };
 
@@ -93,6 +97,10 @@ class LineService
                 {
                     if ($message->getText() === '/中止'){
                         $command = new CommandService($event, $this->_bot, new StopAndCancel());
+                    }
+                    elseif($message->getText() === '/help')
+                    {
+                        $command = new CommandService($event, $this->_bot, new HelperCommand());
                     }
                     else
                     {
@@ -104,6 +112,7 @@ class LineService
                             $command = match ($checkCommand['statusLock']) {
                                 'newStatus' => new CommandService($event, $this->_bot, new AddNewReserve()),
                                 'delStatus' => new CommandService($event, $this->_bot, new RemoveReserve()),
+                                'priceStates' => new CommandService($event, $this->_bot, new ModifyReservePrice()),
                                 'insStatus' => new CommandService($event, $this->_bot, new ReserveIncrease()),
                                 'desStatus' => new CommandService($event, $this->_bot, new ReserveDecrease()),
                                 'chkStatus' => new CommandService($event, $this->_bot, new CheckReserve()),

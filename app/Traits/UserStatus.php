@@ -16,11 +16,12 @@ trait UserStatus
             {
                 $userStatus = [
                     'statusLock' => 'none',
-                    'newStatus' => 'WAIT:STANDBY',
-                    'delStatus' => 'WAIT:STANDBY',
-                    'insStatus' => 'WAIT:STANDBY',
-                    'desStatus' => 'WAIT:STANDBY',
-                    'chkStatus' => 'WAIT:STANDBY',
+                    'newStatus' => 'WAIT:STANDBY', //新增庫存
+                    'delStatus' => 'WAIT:STANDBY', //刪除庫存
+                    'priceStates'=> 'WAIT:STANDBY', //修改庫存金額
+                    'insStatus' => 'WAIT:STANDBY', //增加庫存數量
+                    'desStatus' => 'WAIT:STANDBY', //減少庫存數量
+                    'chkStatus' => 'WAIT:STANDBY', //確認庫存
                 ];
 
                 Redis::set($userID, json_encode($userStatus, JSON_UNESCAPED_UNICODE));

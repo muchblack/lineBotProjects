@@ -13,12 +13,11 @@ use App\Models\StoreItem;
 class AddNewReserve implements Command
 {
     use UserStatus;
-    private $method = "newStatus";
+    private string $method = "newStatus";
 
-    public function replyCommand($event)
+    public function replyCommand($event, $userId, $input, $objStoreItem): array
     {
         //先撈使用者目前狀態
-        $userId = $event->getSource()->getUserId();
         Log::info('[UserId] => '. $userId);
         $userStatus = $this->getUserStatus($userId);
         Log::info('[addNew]=>'.json_encode($userStatus));
@@ -29,35 +28,56 @@ class AddNewReserve implements Command
                 $this->setUserStatus($userId, $this->method, 'WAIT:NAME'); //更改狀態
                 break;
             case "WAIT:NAME":
-                $text = '好的，接下來請輸入材料單位：';
-                $this->setUserStatus($userId, $this->method, 'WAIT:UNIT');
-                $this->setUserInput($userId, 'item_name', $event->getMessage()->getText());
+                if($objStoreItem->getStoreItemByName($userId, $input))
+                {
+                    $text = "已有相同名稱的庫存。，請重新輸入";
+                }
+                else
+                {
+                    $text = '好的，接下來請輸入材料單位：';
+                    $this->setUserStatus($userId, $this->method, 'WAIT:UNIT');
+                    $this->setUserInput($userId, 'item_name', $input);
+                }
                 break;
             case "WAIT:UNIT":
-                $text = "收到，最後請輸入材料數量,只能輸入數字：";
-                $this->setUserStatus($userId, $this->method, 'FINISH');
-                $this->setUserInput($userId, 'item_unit', $event->getMessage()->getText());
+                $text = "收到，請輸入材料數量,只能輸入數字：";
+                $this->setUserStatus($userId, $this->method, 'WAIT:PRICE');
+                $this->setUserInput($userId, 'item_unit', $input);
+                break;
+            case "WAIT:PRICE":
+                if( (!preg_match('/^-?[1-9][0-9]*$|^0$/', $input)) || $input <= 0) {
+                    $text = "輸入錯誤，這不是數字";
+                }
+                else
+                {
+                    $text = "收到，最後請輸入材料單價(單位：台幣),只能輸入數字：";
+                    $this->setUserStatus($userId, $this->method, 'FINISH');
+                    $this->setUserInput($userId, 'item_quantity', $input);
+                }
                 break;
             case "FINISH":
-                $input = $event->getMessage()->getText();
                 Log::info('[gettype]=>'.gettype($input).", [Value]=>".$input.", [preg_match]=>".preg_match('/^-?[1-9][0-9]*$|^0$/', $input));
-                if(!preg_match('/^-?[1-9][0-9]*$|^0$/', $input)) {
+                if( (!preg_match('/^-?[1-9][0-9]*$|^0$/', $input)) || $input <= 0) {
                     $text = "輸入錯誤，這不是數字";
                 }
                 else
                 {
                     try {
-                        $text = "已爲你儲存資料。";
                         $inputData = $this->getUserInput($userId);
-                        $objItem = new StoreItem();
-                        $objItem->user_id = $userId;
-                        $objItem->item_name = $inputData['item_name'];
-                        $objItem->item_unit = $inputData['item_unit'];
-                        $objItem->item_quantity = $event->getMessage()->getText();
+                        $arrStoreItemData = [
+                            'user_id' => $userId,
+                            'item_name' => $inputData['item_name'],
+                            'item_unit' => $inputData['item_unit'],
+                            'item_quantity' => $inputData['item_quantity'],
+                            'dollarPerSet' => $input,
+                        ] ;
 
-                        $objItem->save();
+                        $objStoreItem->setStoreItem($userId, $arrStoreItemData);
+
+                        $text = "已爲你儲存資料。";
                         $this->setUserStatus($userId, $this->method, 'WAIT:STANDBY');
                         $this->setUserStatus($userId, 'statusLock', 'none');
+                        $this->clearUserInput($userId); //清理輸入內容
                     }catch (\Exception $e){
                         Log::error($e->getMessage());
                     }

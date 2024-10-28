@@ -9,7 +9,7 @@ class WelCome implements Command
     {
         $this->nickName = $user['nickName'];
     }
-    public function replyCommand($event): array
+    public function replyCommand($event, $userId, $input, $objStoreItem): array
     {
         // TODO: Implement replyCommand() method.
         $text = [

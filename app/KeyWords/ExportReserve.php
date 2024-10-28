@@ -7,7 +7,7 @@ namespace App\KeyWords;
  */
 class ExportReserve implements Command
 {
-    public function replyCommand($event)
+    public function replyCommand($event, $userId, $input, $objStoreItem)
     {
         // TODO: Implement replyCommand() method.
     }
