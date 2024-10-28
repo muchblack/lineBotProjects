@@ -22,23 +22,23 @@ class RemoveReserve implements Command
         $this->setUserStatus($userId, 'statusLock', $this->method);
         switch($userStatus[$this->method]) {
             case "WAIT:STANDBY":
-                $text = '請輸入要刪除的材料名稱：';
+                $text = '請輸入要刪除的庫存物品名稱：';
                 $this->setUserStatus($userId, $this->method, 'WAIT:NAME'); //更改狀態
                 break;
             case "WAIT:NAME":
                 $Items =$objStoreItem->getStoreItemLikeName($userId, $input);
                 if(!$Items->isEmpty())
                 {
-                    $text = "已爲你查詢到下列材料：\n";
+                    $text = "已爲你查詢到下列庫存物品：\n";
                     foreach($Items as $Item) {
-                        $text .= "庫存材料ID : ".$Item->id." , ".$Item->item_name." ".$Item->item_quantity."個\n";
+                        $text .= "庫存庫存物品ID : ".$Item->id." , ".$Item->item_name." ".$Item->item_quantity."個\n";
                     }
-                    $text .= "請輸入要刪除的材料ID,僅限數字";
+                    $text .= "請輸入要刪除的庫存物品ID,僅限數字";
                     $this->setUserStatus($userId, $this->method, 'FINISH');
                 }
                 else
                 {
-                    $text = "沒有類似名稱的材料。";
+                    $text = "沒有類似名稱的庫存物品。";
                 }
                 break;
             case "FINISH":

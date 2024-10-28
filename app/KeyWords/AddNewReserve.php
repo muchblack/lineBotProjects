@@ -24,7 +24,7 @@ class AddNewReserve implements Command
         $this->setUserStatus($userId, 'statusLock', 'newStatus');
         switch($userStatus[$this->method]) {
             case "WAIT:STANDBY":
-                $text = '請輸入材料名稱：';
+                $text = '請輸入庫存名稱：';
                 $this->setUserStatus($userId, $this->method, 'WAIT:NAME'); //更改狀態
                 break;
             case "WAIT:NAME":
@@ -34,13 +34,13 @@ class AddNewReserve implements Command
                 }
                 else
                 {
-                    $text = '好的，接下來請輸入材料單位：';
+                    $text = '好的，接下來請輸入庫存物品單位：';
                     $this->setUserStatus($userId, $this->method, 'WAIT:UNIT');
                     $this->setUserInput($userId, 'item_name', $input);
                 }
                 break;
             case "WAIT:UNIT":
-                $text = "收到，請輸入材料數量,只能輸入數字：";
+                $text = "收到，請輸入庫存物品數量,只能輸入數字：";
                 $this->setUserStatus($userId, $this->method, 'WAIT:PRICE');
                 $this->setUserInput($userId, 'item_unit', $input);
                 break;
@@ -50,7 +50,7 @@ class AddNewReserve implements Command
                 }
                 else
                 {
-                    $text = "收到，最後請輸入材料單價(單位：台幣),只能輸入數字：";
+                    $text = "收到，最後請輸入庫存物品單價(單位：台幣),只能輸入數字：";
                     $this->setUserStatus($userId, $this->method, 'FINISH');
                     $this->setUserInput($userId, 'item_quantity', $input);
                 }

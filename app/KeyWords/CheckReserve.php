@@ -24,7 +24,7 @@ class CheckReserve implements Command
         $this->setUserStatus($userId, 'statusLock', $this->method);
         switch($userStatus[$this->method]) {
             case "WAIT:STANDBY":
-                $text = '請輸入要查詢的材料名稱，可輸入全部查看：';
+                $text = '請輸入要查詢的庫存物品名稱，可輸入全部查看：';
                 $this->setUserStatus($userId, $this->method, 'FINISH'); //更改狀態
                 break;
             case "FINISH":
@@ -38,7 +38,7 @@ class CheckReserve implements Command
                 }
                 if(!$Items->isEmpty())
                 {
-                    $text = "已爲你查詢到下列材料：\n";
+                    $text = "已爲你查詢到下列庫存物品：\n";
                     foreach($Items as $Item) {
                         $text .= "庫存材料ID : ".$Item->id.", ".$Item->item_name." ".$Item->item_quantity."個, 單價：".$Item->dollarPerSet.", 總成本：".($Item->item_quantity * $Item->dollarPerSet)."元\n";
                     }
@@ -48,7 +48,7 @@ class CheckReserve implements Command
                 }
                 else
                 {
-                    $text = "沒有類似名稱的材料。";
+                    $text = "沒有類似名稱的庫存物品。";
                 }
                 break;
         }
