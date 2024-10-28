@@ -40,7 +40,7 @@ class CheckReserve implements Command
                 {
                     $text = "已爲你查詢到下列庫存物品：\n";
                     foreach($Items as $Item) {
-                        $text .= "庫存材料ID : ".$Item->id.", ".$Item->item_name." ".$Item->item_quantity."個, 單價：".$Item->dollarPerSet.", 總成本：".($Item->item_quantity * $Item->dollarPerSet)."元\n";
+                        $text .= "庫存物品ID : ".$Item->id.", ".$Item->item_name." ".$Item->item_quantity." ".$Item->item_unit.", 單價：".$Item->dollarPerSet.", 總成本：".($Item->item_quantity * $Item->dollarPerSet)."元\n";
                     }
                     $this->setUserStatus($userId, $this->method, 'WAIT:STANDBY');
                     $this->setUserStatus($userId, 'statusLock', 'none');
