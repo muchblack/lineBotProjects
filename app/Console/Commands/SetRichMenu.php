@@ -143,7 +143,7 @@ class SetRichMenu extends Command
                     "bounds" => [
                         "x" => 1500,
                         "y" => 843,
-                        "width" => 500,
+                        "width" => 1000,
                         "height" => 843,
                     ],
                     "action"=>[
