@@ -64,6 +64,12 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
         ],
+        'lineCommandLog' =>[
+            'driver' => 'single',
+            'path' => storage_path('logs/lineCommand.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
+        ],
 
         'daily' => [
             'driver' => 'daily',

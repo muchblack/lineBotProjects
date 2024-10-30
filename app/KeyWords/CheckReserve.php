@@ -18,9 +18,9 @@ class CheckReserve implements Command
     public function replyCommand($event, $userId, $input, $objStoreItem): array
     {
         // TODO: Implement replyCommand() method.
-        Log::info('[CHK][UserId] => '. $userId);
+        Log::channel('lineCommandLog')->info('[CHK][UserId] => '. $userId);
         $userStatus = $this->getUserStatus($userId);
-        Log::info('[CHK]=>'.json_encode($userStatus));
+        Log::channel('lineCommandLog')->info('[CHK]=>'.json_encode($userStatus));
         $this->setUserStatus($userId, 'statusLock', $this->method);
         switch($userStatus[$this->method]) {
             case "WAIT:STANDBY":

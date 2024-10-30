@@ -18,9 +18,9 @@ class AddNewReserve implements Command
     public function replyCommand($event, $userId, $input, $objStoreItem): array
     {
         //先撈使用者目前狀態
-        Log::info('[UserId] => '. $userId);
+        Log::channel('lineCommandLog')->info('[UserId] => '. $userId);
         $userStatus = $this->getUserStatus($userId);
-        Log::info('[addNew]=>'.json_encode($userStatus));
+        Log::channel('lineCommandLog')->info('[addNew]=>'.json_encode($userStatus));
         $this->setUserStatus($userId, 'statusLock', 'newStatus');
         switch($userStatus[$this->method]) {
             case "WAIT:STANDBY":
@@ -50,7 +50,7 @@ class AddNewReserve implements Command
                 }
                 else
                 {
-                    $text = "收到，最後請輸入庫存物品單價(單位：台幣),只能輸入數字：";
+                    $text = "收到，最後請輸入庫存物品單價(單位：台幣),只能輸入數字，或是輸入0：";
                     $this->setUserStatus($userId, $this->method, 'FINISH');
                     $this->setUserInput($userId, 'item_quantity', $input);
                 }

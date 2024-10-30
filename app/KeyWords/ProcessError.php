@@ -21,7 +21,7 @@ class ProcessError implements Command
             'chkStatus' => '庫存確認',
             'priceStatus' => '庫存金額修改'
         ];
-        $text = "目前還在處理 [".$commandList[$userStatus['statusLock']]."] 中，請全部輸入完成後再進行其他動作,或是輸入[中止]來結束流程。";
+        $text = "目前還在處理 [".$commandList[$userStatus['statusLock']]."] 中，請全部輸入完成後再進行其他動作,或是輸入[/中止]來結束流程。";
 
         return [(new TextMessage(['text'=>$text]))->setType('text')];
     }

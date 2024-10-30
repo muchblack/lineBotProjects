@@ -11,7 +11,7 @@ trait UserStatus
     public function getUserStatus($userID)
     {
             $userStatus = Redis::get($userID);
-            Log::info('handUserStatus: ' . $userStatus);
+            Log::channel('lineCommandLog')->info('handUserStatus: ' . $userStatus);
             if(!$userStatus)
             {
                 $userStatus = [
@@ -50,8 +50,8 @@ trait UserStatus
     public function setUserInput($userId, $input_column, $input_value)
     {
         $userInput = json_decode(Redis::get('input_'.$userId), true) ?? [] ;
-        Log::info('[setUserInput][inputColumn] '. $input_column);
-        Log::info('[setUserInput][inputValue] '. $input_value);
+        Log::channel('lineCommandLog')->info('[setUserInput][inputColumn] '. $input_column);
+        Log::channel('lineCommandLog')->info('[setUserInput][inputValue] '. $input_value);
         $userInput[$input_column] = $input_value;
         Redis::set('input_'.$userId, json_encode($userInput, JSON_UNESCAPED_UNICODE));
     }

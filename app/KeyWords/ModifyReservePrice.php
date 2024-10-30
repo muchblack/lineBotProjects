@@ -42,7 +42,7 @@ class ModifyReservePrice implements Command
                 }
                 else
                 {
-                    $text = "好的，希望金額修改爲？（單位爲台幣）";
+                    $text = "好的，希望金額修改爲？（單位爲台幣），可以輸入0";
                     $this->setUserInput($userId, 'id', $input);
                     $this->setUserStatus($userId, $this->method, 'FINISH');
                 }
