@@ -53,6 +53,13 @@ return [
             'throw' => false,
         ],
 
+        'itemImage' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/images'),
+            'url' => env('APP_URL').'/images',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -80,7 +87,8 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
-        public_path('export') => storage_path('app/public/exports')
+        public_path('export') => storage_path('app/public/exports'),
+        public_path('image') => storage_path('app/public/image')
     ],
 
 ];
