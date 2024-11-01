@@ -76,15 +76,19 @@ class LineService
 
                 if( $message instanceof ImageMessageContent)
                 {
-                    $msgId = $message->getId();
-                    $response = $this->getImage($msgId);
-                    $fileName = $event->getSource()->getUserId().'/'.uniqid().'.jpg';
-                    Storage::disk('itemImage')->put($fileName,$response);
-                    $url = Storage::disk()->url($fileName);
-                    Log::channel('lineCommandLog')->info('[imgUrl] => '. $url);
+                    if( ($checkCommand['statusLock'] === 'newStatus') || ($checkCommand['statusLock'] === 'modifyStates') )
+                    {
+                        $className = $statusList[$checkCommand['statusLock']] ?? "App\\KeyWords\\CommandError";
+                        $command = new CommandService($event, $this->_bot, new $className());
+                        $command->reply();
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
 
-                if(($message instanceof TextMessageContent)) {
+                if($message instanceof TextMessageContent) {
                     //檢查是否在交互輸入中
                     Log::channel('lineCommandLog')->info('command => ' . json_encode($checkCommand));
                     Log::channel('lineCommandLog')->info('[LockStatus] => ' . $checkCommand['statusLock']);
@@ -119,10 +123,6 @@ class LineService
 
                     $command->reply();
                 }
-                else
-                {
-                    continue;
-                }
             }
         }
 
@@ -150,27 +150,4 @@ class LineService
         ];
     }
 
-    private function getImage($msgId)
-    {
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api-data.line.me/v2/bot/message/'.$msgId.'/content',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => array(
-                'Authorization: Bearer '.env('LINE_BOT_CHANNEL_ACCESS_TOKEN')
-            ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        return $response;
-//        Log::channel('lineCommandLog')->info('[curl] => '.$response);
-    }
 }

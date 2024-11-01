@@ -105,6 +105,7 @@ class ModifyReserve implements Command
                             $text = "位置修改完成";
                             break;
                         case 5:
+                            $modifyData = ['item_pic_url' => $input];
                             break;
                     }
                     if(!empty($modifyData)) {
